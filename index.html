@@ -171,6 +171,14 @@
       z-index: 2;
     }
 
+    .hero-content-box {
+      background: rgba(9, 9, 14, 0.7);
+      backdrop-filter: blur(6px);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 48px 44px;
+    }
+
     .hero-tag {
       font-family: var(--mono);
       font-size: 12px;
@@ -706,12 +714,14 @@
   <!-- HERO -->
   <div id="hero-wrapper">
     <section id="hero">
-      <div class="hero-tag">// Corvallis, Oregon</div>
-      <h1>Bryce<br /><span>Davenport</span></h1>
-      <p class="hero-sub">Junior Network Operations Engineer building and maintaining the infrastructure that keeps people connected, while studying CS &amp; Cybersecurity at Oregon State eCampus.</p>
-      <div class="hero-cta">
+      <div class="hero-content-box">
+        <div class="hero-tag">// Corvallis, Oregon</div>
+        <h1>Bryce<br /><span>Davenport</span></h1>
+        <p class="hero-sub">Junior Network Operations Engineer building and maintaining the infrastructure that keeps people connected, while studying CS &amp; Cybersecurity at Oregon State eCampus.</p>
+        <div class="hero-cta">
         <a href="/contact" class="btn btn-primary">Get in touch</a>
         <a href="/experience" class="btn btn-ghost">View my work</a>
+        </div>
       </div>
     </section>
   </div>
