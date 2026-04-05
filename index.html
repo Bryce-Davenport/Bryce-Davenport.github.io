@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bryce Davenport</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #09090e;
+      --surface: #10101a;
+      --surface-2: #16162200;
+      --border: #1f1f30;
+      --accent: #00c9a7;
+      --accent-dim: rgba(0, 201, 167, 0.12);
+      --accent-glow: rgba(0, 201, 167, 0.25);
+      --text: #e2e2ee;
+      --text-muted: #5a5a72;
+      --text-mid: #9090aa;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Sora', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── Noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    /* ── Grid background ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.3;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 48px;
+      background: rgba(9, 9, 14, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ── SECTIONS ── */
+    section {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 100px 24px;
+    }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── HERO WRAPPER ── */
+    #hero-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    #hero {
+      min-height: 100vh;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 120px 24px 340px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .mountains-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .mountains-container svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .hero-tag {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.1s forwards;
+    }
+
+    h1 {
+      font-family: var(--sans);
+      font-size: clamp(42px, 8vw, 76px);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.2s forwards;
+    }
+
+    h1 span { color: var(--accent); }
+
+    .hero-sub {
+      font-size: 17px;
+      color: var(--text-mid);
+      max-width: 540px;
+      line-height: 1.75;
+      margin-bottom: 44px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.35s forwards;
+      font-weight: 300;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.5s forwards;
+    }
+
+    .btn {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 12px 28px;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 700;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 24px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-mid);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .about-text p {
+      color: var(--text-mid);
+      margin-bottom: 16px;
+      font-weight: 300;
+      font-size: 15px;
+    }
+
+    .about-text p:last-child { margin-bottom: 0; }
+
+    .about-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .stat-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 18px 22px;
+      border-radius: 4px;
+    }
+
+    .currently-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      margin-bottom: 4px;
+    }
+
+    .stat-key {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .stat-value-sm {
+      font-size: 14px;
+      color: var(--text-mid);
+      font-weight: 300;
+      line-height: 1.5;
+    }
+
+    /* ── EXPERIENCE ── */
+    .exp-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .exp-item {
+      position: relative;
+      padding: 0 0 40px 32px;
+      border-left: 1px solid var(--border);
+    }
+
+    .exp-item:last-child { border-left-color: transparent; padding-bottom: 0; }
+
+    .exp-item::before {
+      content: '';
+      position: absolute;
+      left: -5px;
+      top: 6px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .exp-company {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .exp-role {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .exp-meta {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .exp-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .exp-bullets li {
+      color: var(--text-mid);
+      font-size: 14px;
+      font-weight: 300;
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .exp-bullets li::before {
+      content: '>';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* ── SKILLS ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .skill-group {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 22px;
+      transition: border-color 0.2s;
+    }
+
+    .skill-group:hover { border-color: var(--accent); }
+
+    .skill-group-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .skill-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-mid);
+      background: var(--accent-dim);
+      border: 1px solid rgba(0, 201, 167, 0.2);
+      padding: 4px 10px;
+      border-radius: 3px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── PROJECTS ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 28px;
+      transition: border-color 0.2s, transform 0.2s;
+      text-decoration: none;
+      display: block;
+    }
+
+    .project-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .project-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .project-icon { font-size: 20px; line-height: 1; }
+
+    .project-link-icon {
+      font-family: var(--mono);
+      font-size: 18px;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .project-card:hover .project-link-icon { color: var(--accent); }
+
+    .project-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .project-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 300;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .project-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .project-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--accent);
+      border: 1px solid rgba(0, 201, 167, 0.25);
+      padding: 3px 8px;
+      border-radius: 3px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── EDUCATION ── */
+    .edu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .edu-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 24px 28px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .edu-school {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .edu-degree {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .edu-note {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 300;
+    }
+
+    .edu-years {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* ── CONTACT ── */
+    .contact-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .contact-info p {
+      color: var(--text-mid);
+      font-weight: 300;
+      margin-bottom: 28px;
+      font-size: 15px;
+    }
+
+    .social-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .social-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--text-mid);
+      font-size: 14px;
+      transition: color 0.2s;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .social-link:hover { color: var(--accent); }
+
+    .social-link-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      width: 72px;
+    }
+
+    .social-link:hover .social-link-label { color: var(--accent); }
+
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-field label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .form-field input,
+    .form-field textarea {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      resize: vertical;
+    }
+
+    .form-field input:focus,
+    .form-field textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .form-field textarea { min-height: 120px; }
+
+    .form-submit {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 14px 28px;
+      border-radius: 4px;
+      border: none;
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      align-self: flex-start;
+    }
+
+    .form-submit:hover {
+      box-shadow: 0 0 24px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 28px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer span {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    footer span b { color: var(--accent); font-weight: 400; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      nav { padding: 16px 20px; }
+      .nav-links { gap: 20px; }
+      .nav-links a { font-size: 11px; }
+      section { padding: 80px 20px; }
+      #hero { padding-top: 120px; }
+      .about-grid, .contact-wrapper { grid-template-columns: 1fr; gap: 32px; }
+      .edu-item { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 8px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">bd://</div>
+    <ul class="nav-links">
+      <li><a href="/resume">Resume</a></li>
+      <li><a href="/projects">Projects</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div id="hero-wrapper">
+    <section id="hero">
+      <div class="hero-tag">// Corvallis, Oregon</div>
+      <h1>Bryce<br /><span>Davenport</span></h1>
+      <p class="hero-sub">Junior Network Operations Engineer building and maintaining the infrastructure that keeps people connected, while studying CS &amp; Cybersecurity at Oregon State eCampus.</p>
+      <div class="hero-cta">
+        <a href="/contact" class="btn btn-primary">Get in touch</a>
+        <a href="/experience" class="btn btn-ghost">View my work</a>
+      </div>
+    </section>
+
+    <!-- Central Oregon Mountains: N. Sister, M. Sister, S. Sister, Broken Top, Mt. Bachelor -->
+    <div class="mountains-container">
+      <svg viewBox="0 0 1200 260" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <defs>
+          <linearGradient id="peakFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#00c9a7" stop-opacity="0.15"/>
+            <stop offset="100%" stop-color="#00c9a7" stop-opacity="0.02"/>
+          </linearGradient>
+          <linearGradient id="strokeGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#00c9a7" stop-opacity="0.3"/>
+            <stop offset="15%" stop-color="#00c9a7" stop-opacity="0.9"/>
+            <stop offset="50%" stop-color="#00c9a7" stop-opacity="1"/>
+            <stop offset="85%" stop-color="#00c9a7" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#00c9a7" stop-opacity="0.3"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Fill -->
+        <path d="
+          M 0,220 L 120,220 L 200,190 L 270,170 L 310,95 L 345,140 L 365,148
+          L 390,108 L 418,145 L 445,135 L 490,38 L 530,125 L 555,142
+          L 575,135 L 590,118 L 610,148 L 640,165 L 700,185 L 760,192
+          L 800,185 L 830,150 L 850,58 L 872,145 L 895,172 L 940,190
+          L 1020,205 L 1100,215 L 1200,220 Z
+        " fill="url(#peakFill)" />
+
+        <!-- Ridgeline -->
+        <path d="
+          M 0,220 L 120,220 L 200,190 L 270,170 L 310,95 L 345,140 L 365,148
+          L 390,108 L 418,145 L 445,135 L 490,38 L 530,125 L 555,142
+          L 575,135 L 590,118 L 610,148 L 640,165 L 700,185 L 760,192
+          L 800,185 L 830,150 L 850,58 L 872,145 L 895,172 L 940,190
+          L 1020,205 L 1100,215 L 1200,220
+        " stroke="url(#strokeGrad)" stroke-width="1.8" stroke-linejoin="miter" stroke-linecap="square" fill="none" />
+
+        <!-- Peak labels -->
+        <text x="310" y="80" font-family="'JetBrains Mono', monospace" font-size="10" fill="#00c9a7" fill-opacity="0.5" text-anchor="middle" letter-spacing="0.5">N. SISTER</text>
+        <text x="390" y="95" font-family="'JetBrains Mono', monospace" font-size="10" fill="#00c9a7" fill-opacity="0.5" text-anchor="middle" letter-spacing="0.5">M. SISTER</text>
+        <text x="490" y="24" font-family="'JetBrains Mono', monospace" font-size="10" fill="#00c9a7" fill-opacity="0.85" text-anchor="middle" letter-spacing="0.5">S. SISTER</text>
+        <text x="590" y="105" font-family="'JetBrains Mono', monospace" font-size="10" fill="#00c9a7" fill-opacity="0.5" text-anchor="middle" letter-spacing="0.5">BROKEN TOP</text>
+        <text x="850" y="44" font-family="'JetBrains Mono', monospace" font-size="10" fill="#00c9a7" fill-opacity="0.65" text-anchor="middle" letter-spacing="0.5">MT. BACHELOR</text>
+
+        <!-- Tick marks -->
+        <line x1="310" y1="95" x2="310" y2="88" stroke="#00c9a7" stroke-opacity="0.4" stroke-width="1"/>
+        <line x1="390" y1="108" x2="390" y2="101" stroke="#00c9a7" stroke-opacity="0.4" stroke-width="1"/>
+        <line x1="490" y1="38" x2="490" y2="30" stroke="#00c9a7" stroke-opacity="0.6" stroke-width="1"/>
+        <line x1="590" y1="118" x2="590" y2="111" stroke="#00c9a7" stroke-opacity="0.4" stroke-width="1"/>
+        <line x1="850" y1="58" x2="850" y2="50" stroke="#00c9a7" stroke-opacity="0.5" stroke-width="1"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-label">About me</div>
+    <div class="about-grid reveal">
+      <div class="about-text">
+        <p>I'm a Junior Network Operations Engineer at Alyrica Networks, where I serve as the final escalation point for technical issues across a combined WISP and fiber provider network. My day-to-day involves configuring core and access layer routers, supporting VoIP systems, maintaining infrastructure, and managing internal IT onboarding.</p>
+        <p>What started as frontline customer support grew into a deep interest in how networks actually work: the routing, the protocols, the infrastructure underneath. That curiosity is what's driving me to finish my CS degree with a focus on cybersecurity while working full time.</p>
+        <p>Outside of networking, I'm interested in the intersection of security and systems: understanding not just how to keep things running, but how to keep them safe.</p>
+      </div>
+      <div class="about-stats">
+        <div class="currently-label">// currently</div>
+        <div class="stat-item">
+          <div class="stat-key">Working</div>
+          <div class="stat-value-sm">Jr. Network Operations Engineer at Alyrica Networks</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-key">Studying</div>
+          <div class="stat-value-sm">B.S. Computer Science, Cybersecurity focus at OSU eCampus</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-key">Focused on</div>
+          <div class="stat-value-sm">Network infrastructure, routing, and security</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>Bryce Davenport &middot; <b>brycedavenport.com</b></span>
+    <span>Corvallis, Oregon &middot; 2026</span>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
