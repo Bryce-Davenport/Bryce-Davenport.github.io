@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resume &middot; Bryce Davenport</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #09090e;
+      --surface: #10101a;
+      --border: #1f1f30;
+      --accent: #00c9a7;
+      --accent-glow: rgba(0, 201, 167, 0.25);
+      --text: #e2e2ee;
+      --text-muted: #5a5a72;
+      --text-mid: #9090aa;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Sora', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.3;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 48px;
+      background: rgba(9, 9, 14, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      text-decoration: none;
+    }
+
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--accent); }
+
+    /* Main */
+    main {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 140px 24px 80px;
+    }
+
+    .resume-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 56px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.1s forwards;
+    }
+
+    .resume-head h1 {
+      font-size: clamp(38px, 6vw, 56px);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .resume-head h1 span { color: var(--accent); }
+
+    .head-meta {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-mid);
+      letter-spacing: 0.05em;
+      line-height: 1.9;
+      text-align: right;
+    }
+
+    .head-meta a {
+      color: var(--text-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .head-meta a:hover { color: var(--accent); }
+
+    .head-actions {
+      width: 100%;
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 10px 22px;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 700;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 24px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-mid);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Sections */
+    .resume-section {
+      margin-bottom: 56px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards;
+    }
+
+    .resume-section:nth-of-type(1) { animation-delay: 0.2s; }
+    .resume-section:nth-of-type(2) { animation-delay: 0.3s; }
+    .resume-section:nth-of-type(3) { animation-delay: 0.4s; }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .summary {
+      color: var(--text-mid);
+      font-weight: 300;
+      max-width: 720px;
+    }
+
+    /* Role cards */
+    .role {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+    }
+
+    .role-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      margin-bottom: 6px;
+    }
+
+    .role-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .role-dates {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .role-company {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+
+    .role ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .role li {
+      position: relative;
+      padding-left: 20px;
+      color: var(--text-mid);
+      font-weight: 300;
+      margin-bottom: 8px;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .role li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 12px;
+      top: 2px;
+    }
+
+    .role li:last-child { margin-bottom: 0; }
+
+    /* Education */
+    .edu-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px;
+      padding: 20px 24px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+    }
+
+    .edu-degree {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text);
+    }
+
+    .edu-school {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      margin-top: 4px;
+      display: block;
+    }
+
+    .edu-dates {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 28px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer span {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    footer span b { color: var(--accent); font-weight: 400; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 700px) {
+      nav { padding: 16px 20px; }
+      .nav-links { gap: 20px; }
+      .nav-links a { font-size: 11px; }
+      main { padding: 120px 20px 60px; }
+      .resume-head { align-items: flex-start; }
+      .head-meta { text-align: left; }
+      .role { padding: 20px 22px; }
+      .edu-item { padding: 18px 20px; }
+      footer { flex-direction: column; gap: 8px; text-align: center; padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">bd://</a>
+    <ul class="nav-links">
+      <li><a href="/resume" class="active">Resume</a></li>
+      <li><a href="/projects">Projects</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <header class="resume-head">
+      <div>
+        <h1>Bryce <span>Davenport</span></h1>
+      </div>
+      <div class="head-meta">
+        Corvallis, OR<br />
+        <a href="mailto:contact@brycedavenport.com">contact@brycedavenport.com</a><br />
+        <a href="https://www.linkedin.com/in/bryce-davenport-91807a2a7" target="_blank" rel="noopener noreferrer">linkedin.com/in/bryce-davenport</a>
+      </div>
+      <div class="head-actions">
+        <a href="/Bryce_Davenport_Resume.pdf" class="btn btn-primary" download>Download PDF</a>
+        <a href="/contact" class="btn btn-ghost">Get in touch</a>
+      </div>
+    </header>
+
+    <section class="resume-section">
+      <div class="section-label">Summary</div>
+      <p class="summary">IT and network operations professional with nearly three years of progressively responsible technical support experience at a regional ISP, including frontline help desk, escalation engineering, and a current Junior NOC Engineer role. Pursuing a B.S. in Computer Science with a cybersecurity focus at Oregon State University, part-time.</p>
+    </section>
+
+    <section class="resume-section">
+      <div class="section-label">Experience</div>
+
+      <article class="role">
+        <div class="role-head">
+          <div class="role-title">Jr. Network Operations Engineer</div>
+          <div class="role-dates">Jan 2026 &mdash; Present</div>
+        </div>
+        <div class="role-company">Alyrica Networks &middot; Philomath, OR</div>
+        <ul>
+          <li>Serve as the escalation point for all technical issues across the organization, resolving the most complex infrastructure and connectivity problems in a fast-paced small-team environment.</li>
+          <li>Configure and upgrade core and access layer routers to improve network performance; maintain and troubleshoot infrastructure across a combined WISP and fiber provider network.</li>
+          <li>Manage internal IT onboarding and Active Directory administration for new employees, ensuring accounts, permissions, and system access are provisioned accurately.</li>
+          <li>Support VoIP systems as part of day-to-day network operations, including registration troubleshooting and call quality remediation.</li>
+          <li>Administer and maintain internal ticketing systems including Jira and Znuny (OTRS), managing workflows, queues, and configurations to support efficient incident tracking and resolution.</li>
+          <li>Document incident root causes and coordinate with internal teams to implement corrective actions and prevent recurrence.</li>
+          <li>Participate in on-call rotations and night shifts.</li>
+        </ul>
+      </article>
+
+      <article class="role">
+        <div class="role-head">
+          <div class="role-title">CSR II &middot; Technical Support Escalations</div>
+          <div class="role-dates">Oct 2024 &mdash; Jan 2026</div>
+        </div>
+        <div class="role-company">Alyrica Networks &middot; Philomath, OR</div>
+        <ul>
+          <li>Led escalated troubleshooting for complex issues across fiber, fixed wireless, and enterprise connectivity environments, partnering with field and network operations teams to restore service during outages.</li>
+          <li>Regularly diagnosed and resolved end-user device issues beyond the scope of ISP responsibility, including OS-level network configuration, firewall and security software conflicts, VPN misconfigurations, outdated or corrupt network adapter drivers, and DNS problems on Windows, macOS, and mobile platforms.</li>
+          <li>Supported business and enterprise accounts with a focus on uptime, service continuity, and clear stakeholder communication during high-impact incidents.</li>
+          <li>Configured and supported Grandstream VoIP systems for enterprise customers, including IP phone provisioning, extension setup, and UCM PBX administration; troubleshot registration failures, call quality degradation, and network-related impairments affecting voice services.</li>
+          <li>Assisted with network site planning and service readiness coordination including capacity, coverage, and deployment considerations.</li>
+        </ul>
+      </article>
+
+      <article class="role">
+        <div class="role-head">
+          <div class="role-title">CSR I &middot; Technical Support</div>
+          <div class="role-dates">Jun 2023 &mdash; Oct 2024</div>
+        </div>
+        <div class="role-company">Alyrica Networks &middot; Philomath, OR</div>
+        <ul>
+          <li>Delivered first-level help desk support to residential and business customers, troubleshooting end-to-end connectivity issues including Wi-Fi, routing, LAN configuration, and service provisioning.</li>
+          <li>Routinely assisted customers with personal device issues outside the formal scope of ISP support, including laptop and desktop network settings, Wi-Fi adapter configuration, smart home device connectivity, browser and application-level networking problems, and operating system firewall rules across Windows, macOS, iOS, and Android.</li>
+          <li>Resolved service-impacting problems such as packet loss, latency, intermittent drops, and speed complaints; coordinated with internal teams to dispatch field technicians and confirm service restoration.</li>
+          <li>Documented incidents and resolutions following established workflows, maintaining accurate records in support of quality improvement and root cause tracking.</li>
+        </ul>
+      </article>
+
+      <article class="role">
+        <div class="role-head">
+          <div class="role-title">Sporting Goods Associate</div>
+          <div class="role-dates">Jul 2021 &mdash; Jun 2024</div>
+        </div>
+        <div class="role-company">Coastal Farm &amp; Ranch &middot; Corvallis, OR</div>
+        <ul>
+          <li>Managed state and federal compliance documentation and identity verification with precision and strict attention to legal requirements.</li>
+          <li>Maintained organized inventory and supported team operations during high-traffic periods, consistently delivering reliable customer service.</li>
+        </ul>
+      </article>
+
+      <article class="role">
+        <div class="role-head">
+          <div class="role-title">Line Cook / Prep Cook</div>
+          <div class="role-dates">May 2017 &mdash; Jan 2021</div>
+        </div>
+        <div class="role-company">Juniper Preserve Golf &amp; Wellness Resort &middot; Bend, OR</div>
+        <ul>
+          <li>Contributed to kitchen operations at a private resort and golf club, demonstrating sustained reliability, teamwork, and performance under pressure.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="resume-section">
+      <div class="section-label">Education</div>
+
+      <div class="edu-item">
+        <div>
+          <div class="edu-degree">B.S. Computer Science, Cybersecurity Focus</div>
+          <span class="edu-school">Oregon State University &middot; Part-Time</span>
+        </div>
+        <div class="edu-dates">Jan 2022 &mdash; Jun 2027</div>
+      </div>
+
+      <div class="edu-item">
+        <div>
+          <div class="edu-degree">High School Diploma</div>
+          <span class="edu-school">Mountain View High School &middot; Bend, OR</span>
+        </div>
+        <div class="edu-dates">Jun 2018</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>Bryce Davenport &middot; <b>brycedavenport.com</b></span>
+    <span>Corvallis, Oregon &middot; 2026</span>
+  </footer>
+
+</body>
+</html>
